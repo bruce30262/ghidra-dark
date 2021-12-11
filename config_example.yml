@@ -1,0 +1,4 @@
+# Copy this file to "config.yml" and modify the settings
+flatlaf:
+    version: "1.6.5" # ref: https://www.formdev.com/flatlaf/#download
+    style: "FlatDarkLaf" # ref: https://www.formdev.com/flatlaf/themes/

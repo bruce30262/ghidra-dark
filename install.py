@@ -13,6 +13,7 @@ from urllib.request import urlopen
 from tcd_browser import TCDBrowser, TCD_LIST
 from preferences import preferences
 
+from flatlaf_config import flatlaf_version, flatlaf_style
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +128,6 @@ def install_flatlaf(
         install_dir = ":${INSTALL_DIR}/"
         cpath = "CPATH="
 
-    flatlaf_version = "0.43"
     flatlaf_path = os.path.join(install_path, f"flatlaf-{flatlaf_version}.jar")
     flatlaf_url = (
         f"https://repo1.maven.org/maven2/com/formdev/flatlaf/{flatlaf_version}/"
@@ -147,17 +147,18 @@ def install_flatlaf(
     launch_properties_path = os.path.join(install_path, "support", "launch.properties")
 
     # Add FlatLaf to the list of jar files
-    with fileinput.FileInput(launch_sh_path, inplace=True, backup=".bak") as fp:
-        for line in fp:
-            if line.strip().startswith(cpath) and "flatlaf" not in line:
-                if os.name == "nt" and version_number < (10, 0, 0):
-                    print(f"{line.rstrip()}{install_dir}flatlaf-{flatlaf_version}.jar")
+    if not os.path.exists(f"{launch_sh_path}.bak"): # backup file only if .bak is not exist
+        with fileinput.FileInput(launch_sh_path, inplace=True, backup=".bak") as fp:
+            for line in fp:
+                if line.strip().startswith(cpath) and "flatlaf" not in line:
+                    if os.name == "nt" and version_number < (10, 0, 0):
+                        print(f"{line.rstrip()}{install_dir}flatlaf-{flatlaf_version}.jar")
+                    else:
+                        print(
+                            f'{line.rstrip()[:-1]}{install_dir}flatlaf-{flatlaf_version}.jar"'
+                        )
                 else:
-                    print(
-                        f'{line.rstrip()[:-1]}{install_dir}flatlaf-{flatlaf_version}.jar"'
-                    )
-            else:
-                print(line, end="")
+                    print(line, end="")
 
     # Check if FlatLaf is the system L&f
     flatlaf_set = False
@@ -171,7 +172,7 @@ def install_flatlaf(
     if not flatlaf_set:
         with open(launch_properties_path, "a") as fp:
             logging.debug("Setting FlatLaf as system L&f")
-            fp.write("\nVMARGS=-Dswing.systemlaf=com.formdev.flatlaf.FlatDarkLaf")
+            fp.write(f"\nVMARGS=-Dswing.systemlaf=com.formdev.flatlaf.{flatlaf_style}")
 
 
 def install_dark_preferences(config_path: str):
@@ -203,7 +204,8 @@ def install_dark_preferences(config_path: str):
         tcd_path = os.path.join(config_path, "tools", tcd)
         backup_path = os.path.join(config_path, "tools", f"{tcd}.bak")
         try:
-            shutil.copy(tcd_path, backup_path)
+            if not os.path.exists(backup_path):
+                shutil.copy(tcd_path, backup_path)
             browser = TCDBrowser(tcd_path)
             browser.update(preferences)
         except FileNotFoundError:

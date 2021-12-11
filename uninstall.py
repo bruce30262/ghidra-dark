@@ -13,9 +13,9 @@ from install import (
 )
 from tcd_browser import TCD_LIST
 
+from flatlaf_config import flatlaf_version, flatlaf_style
 
 logger = logging.getLogger(__name__)
-
 
 def remove_flatlaf(install_path: str):
     """Remove the flatlaf jar and remove it from launch files.
@@ -28,7 +28,6 @@ def remove_flatlaf(install_path: str):
     else:
         launch_sh = "launch.sh"
 
-    flatlaf_version = "0.43"
     flatlaf_path = os.path.join(install_path, f"flatlaf-{flatlaf_version}.jar")
     try:
         os.remove(flatlaf_path)
@@ -49,11 +48,10 @@ def remove_flatlaf(install_path: str):
 
     with fileinput.FileInput(launch_properties_path, inplace=True) as fp:
         for line in fp:
-            if "VMARGS=-Dswing.systemlaf=com.formdev.flatlaf.FlatDarkLaf" not in line:
+            if f"VMARGS=-Dswing.systemlaf=com.formdev.flatlaf.{flatlaf_style}" not in line:
                 print(line, end="")
             else:
                 logging.debug("Restored %s", launch_properties_path)
-
 
 def remove_dark_preferences(config_path: str):
     """Restore preference files from backups.
