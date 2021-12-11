@@ -160,19 +160,25 @@ def install_flatlaf(
                 else:
                     print(line, end="")
 
-    # Check if FlatLaf is the system L&f
-    flatlaf_set = False
-    with open(launch_properties_path, "r") as fp:
-        for line in fp:
-            if "flatlaf" in line:
-                flatlaf_set = True
-                break
+    set_flatlaf_style(launch_properties_path, flatlaf_style)
 
-    # Set FlatLaf as the system L&f
-    if not flatlaf_set:
+
+def set_flatlaf_style(launch_properties_path, style):
+    flatlaf_set = False
+    with fileinput.FileInput(launch_properties_path, inplace=True) as fp:
+        for line in fp:
+            if f"VMARGS=-Dswing.systemlaf=com.formdev.flatlaf." in line:
+                # Already has the property, just update the style
+                logging.debug(f"Updating FlatLaf style to {style}")
+                print(f"VMARGS=-Dswing.systemlaf=com.formdev.flatlaf.{style}", end="")
+                flatlaf_set = True
+            else:
+                print(line, end="")
+
+    if not flatlaf_set: # First time setting, append the property
         with open(launch_properties_path, "a") as fp:
-            logging.debug("Setting FlatLaf as system L&f")
-            fp.write(f"\nVMARGS=-Dswing.systemlaf=com.formdev.flatlaf.{flatlaf_style}")
+            logging.debug(f"Setting FlatLaf as system L&f, style: {style}")
+            fp.write(f"\nVMARGS=-Dswing.systemlaf=com.formdev.flatlaf.{style}")
 
 
 def install_dark_preferences(config_path: str):
@@ -215,7 +221,7 @@ def install_dark_preferences(config_path: str):
                 )
             else:
                 logging.debug("Could not open %s", tcd)
-
+                
 
 def main(args: argparse.Namespace):
     """Install Ghidra dark theme
