@@ -1,4 +1,13 @@
 # Copy this file to "config.yml" and modify the settings
+
 flatlaf:
     version: "1.6.5" # ref: https://www.formdev.com/flatlaf/#download
     style: "FlatDarkLaf" # ref: https://www.formdev.com/flatlaf/themes/
+
+font: # Here by default all the fonts are same as the one in preferences.py
+    Decompiler: 
+        size: 14
+        family: "Monospaced"
+    Listing Display:
+        size: 14
+        family: "Monospaced"

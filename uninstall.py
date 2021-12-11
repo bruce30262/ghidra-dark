@@ -13,7 +13,7 @@ from install import (
 )
 from tcd_browser import TCD_LIST
 
-from flatlaf_config import flatlaf_version, flatlaf_style
+from config import flatlaf_version, flatlaf_style
 
 logger = logging.getLogger(__name__)
 

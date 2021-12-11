@@ -11,9 +11,9 @@ import sys
 from urllib.request import urlopen
 
 from tcd_browser import TCDBrowser, TCD_LIST
-from preferences import preferences
+from preferences import preferences, Font
 
-from flatlaf_config import flatlaf_version, flatlaf_style
+from config import flatlaf_version, flatlaf_style, font_decomp, font_ld
 
 logger = logging.getLogger(__name__)
 
@@ -204,6 +204,11 @@ def install_dark_preferences(config_path: str):
     if not using_system:
         with open(preferences_path, "a") as fp:
             fp.write("LastLookAndFeel=System\n")
+
+    # Set the font size and family
+    # For now only Decompiler and Listing Display has the font setting
+    preferences['Decompiler']['Display.Font'] = Font(font_decomp['size'], 0, font_decomp['family'])
+    preferences['Listing Display']['BASE FONT'] = Font(font_ld['size'], 0, font_ld['family'])
 
     # Backup and modify the current tcd and tool files
     for tcd in TCD_LIST:
