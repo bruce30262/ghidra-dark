@@ -126,3 +126,6 @@ dmypy.json
 
 # macOS
 .DS_Store
+
+# flatlaf config
+config.yml
